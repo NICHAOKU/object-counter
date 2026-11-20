@@ -119,6 +119,9 @@ function startDrawing(e) {
     const rect = canvas.getBoundingClientRect();
     startX = e.clientX - rect.left;
     startY = e.clientY - rect.top;
+    endX = startX;
+    endY = startY;
+    boundingBox = null;
 }
 
 // Draw bounding box while dragging
@@ -140,18 +143,22 @@ function stopDrawing() {
     
     isDrawing = false;
     
-    // Save the bounding box
+    const width = Math.abs(endX - startX);
+    const height = Math.abs(endY - startY);
+    
+    // Discard boxes too small to analyze
+    if (width <= 10 || height <= 10) {
+        clearBoundingBox();
+        return;
+    }
+    
     boundingBox = {
         x: Math.min(startX, endX),
         y: Math.min(startY, endY),
-        width: Math.abs(endX - startX),
-        height: Math.abs(endY - startY)
+        width: width,
+        height: height
     };
-    
-    // Enable count button if bounding box is valid
-    if (boundingBox.width > 10 && boundingBox.height > 10) {
-        document.getElementById('countBtn').disabled = false;
-    }
+    document.getElementById('countBtn').disabled = false;
 }
 
 // Draw bounding box on canvas
